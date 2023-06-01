@@ -1,0 +1,23 @@
+# Main tasks for roles/ssh-fingerprinter
+# Source: https://www.reddit.com/r/ansible/comments/b6jbo6/alternative_to_host_key_checking_false_for_first/
+# Adapted to focus on ansible_host given dynamic deployments may not have hostnames configured in DNS
+# To pivot toward inventory_hostname, use the following...
+#   Removal:
+#     ssh-keygen -R {{ inventory_hostname }}
+#     ssh-keygen -R {{ inventory_hostname_short }}
+#     ssh-keygen -R {{ lookup('dig', '{{ inventory_hostname }}')}}
+#   Addition: 
+#     ssh-keyscan {{ inventory_hostname_short }} >> $HOME/.ssh/known_hosts;
+#     ssh-keyscan {{ inventory_hostname }} >> $HOME/.ssh/known_hosts;
+---
+
+- name: Remove any existing fingerprints from ~/.ssh/known_hosts
+  local_action: 
+    shell 
+      ssh-keygen -R {{ ansible_host }};
+      ssh-keygen -R {{ lookup('dig', '{{ ansible_host }}')}}
+
+- name: Add host rsa and ecdsa fingerprints to ~/.ssh/known_hosts
+  local_action:
+    shell
+      ssh-keyscan {{ ansible_host }} >> $HOME/.ssh/known_hosts
