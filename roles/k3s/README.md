@@ -47,7 +47,7 @@ Example Playbook
     - role: k3s/prereq
     - role: k3s/download
 
-# Designating the first host in the server list as primary for control-plane cluster initializing.
+# Designating the first host in the server list as the primary node to initialize the control-plane cluster.
 - hosts: k3servers[0]
   become: yes
   vars_files:
@@ -56,7 +56,7 @@ Example Playbook
   roles:
     - role: k3s/server-primary
 
-# Prepare other control-plane servers and join to the cluster.
+# Prepare other control-plane servers and join them to the cluster.
 - hosts: k3servers[1:]
   become: yes
   vars_files:
